@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+images/
+specific_distances/
+default_landmark_distances/
+main.py
+config.json
+teste.py
+.env

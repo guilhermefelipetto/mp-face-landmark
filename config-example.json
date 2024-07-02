@@ -1,0 +1,17 @@
+{
+    "static_image_mode": true,
+    "max_num_faces": 1,
+    "min_detection_confidence": 0.5,
+    "draw_landmarks": true,
+    "draw_connections": true,
+    "draw_numbers": true,
+    "landmark_drawing_spec": {
+        "color": [255, 255, 255],
+        "thickness": 1,
+        "circle_radius": 1
+    },
+    "connection_drawing_spec": {
+        "color": [0, 0, 0],
+        "thickness": 1
+    }
+}
