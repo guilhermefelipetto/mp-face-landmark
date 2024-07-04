@@ -16,6 +16,7 @@ class FaceMeshModel:
         )
         self.points = []
         self.image = None
+        self.reference_distance = None
 
     def calculate_distance(self, idx1, idx2):
         if not self.points:
@@ -25,19 +26,26 @@ class FaceMeshModel:
         return np.linalg.norm(np.array(p1) - np.array(p2))
     
     def save_landmark_distances(self, output_file):
+        if self.reference_distance is None:
+            self.reference_distance = self.calculate_distance(10, 152)
+        
         directory = "default_landmark_distances"
         os.makedirs(directory, exist_ok=True)
         output_path = os.path.join(directory, output_file)
         
         with open(output_path, 'w') as file:
             for i in range(len(self.points) - 1):
-                dist = self.calculate_distance(i, i + 1)
+                dist = self.calculate_distance(i, i + 1) / self.reference_distance
                 file.write(f'{i} {i+1} {dist}\n')
 
     def calculate_and_draw_distance(self, idx1, idx2, save=False, measure_type='None'):
         if not self.points:
             raise ValueError("No landmarks available. Process an image first.")
-        dist = self.calculate_distance(idx1, idx2)
+        
+        if self.reference_distance is None:
+            self.reference_distance = self.calculate_distance(10, 152)
+        
+        dist = self.calculate_distance(idx1, idx2) / self.reference_distance
         cv2.line(self.image, self.points[idx1], self.points[idx2], (0, 255, 0), 2)
         cv2.putText(self.image, f"{dist:.2f}", ((self.points[idx1][0] + self.points[idx2][0]) // 2, (self.points[idx1][1] + self.points[idx2][1]) // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
@@ -77,6 +85,7 @@ class FaceMeshModel:
                     for idx, point in enumerate(self.points):
                         cv2.putText(self.image, str(idx), (point[0], point[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 255), 1)
 
+        self.reference_distance = self.calculate_distance(10, 152)
         image_basename = os.path.basename(image_path).split('.')[0]
         output_file = f"{image_basename}_landmarks_distances.txt"
         self.save_landmark_distances(output_file)

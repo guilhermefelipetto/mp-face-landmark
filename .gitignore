@@ -1,9 +1,11 @@
 .venv/
+.env
 __pycache__/
 images/
 specific_distances/
 default_landmark_distances/
+data/LFW_People/
+paths.txt
 main.py
 config.json
 teste.py
-.env
