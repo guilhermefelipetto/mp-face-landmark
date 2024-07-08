@@ -123,40 +123,9 @@ class Image:
             self.modelo_face_mesh.process_image(self.path)
 
             self.features = [
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 152),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 152),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 10),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 361),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 132),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 365),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 150),
-                self.modelo_face_mesh.calculate_and_draw_distance(334, 443),
-                self.modelo_face_mesh.calculate_and_draw_distance(282, 334),
-                self.modelo_face_mesh.calculate_and_draw_distance(105, 223),
-                self.modelo_face_mesh.calculate_and_draw_distance(52, 105),
-                self.modelo_face_mesh.calculate_and_draw_distance(54, 284),
-                self.modelo_face_mesh.calculate_and_draw_distance(9, 10),
-                self.modelo_face_mesh.calculate_and_draw_distance(133, 463),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 159),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 386),
-                self.modelo_face_mesh.calculate_and_draw_distance(159, 386),
-                self.modelo_face_mesh.calculate_and_draw_distance(133, 33),
-                self.modelo_face_mesh.calculate_and_draw_distance(263, 362),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 278),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 48),
-                self.modelo_face_mesh.calculate_and_draw_distance(0, 1),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 16),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 61),
-                self.modelo_face_mesh.calculate_and_draw_distance(1, 291),
-                self.modelo_face_mesh.calculate_and_draw_distance(0, 16),
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 33),
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 133),
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 263),
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 362),
-                self.modelo_face_mesh.calculate_and_draw_distance(33, 152),
-                self.modelo_face_mesh.calculate_and_draw_distance(133, 152),
-                self.modelo_face_mesh.calculate_and_draw_distance(152, 263),
-                self.modelo_face_mesh.calculate_and_draw_distance(152, 362)
+                self.modelo_face_mesh.calculate_and_draw_distance(1, ),
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 20)
+                # Use as mesmas medicoes que o processamento
             ]
 
             # Obtenha as probabilidades das previsões
