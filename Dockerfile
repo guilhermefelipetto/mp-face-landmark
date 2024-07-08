@@ -5,10 +5,10 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY image_processing.py scripts/image_processing.py
-COPY main.py scripts/main.py
+# Copia os scripts Python para o diretório correto
+COPY scripts/ /app/scripts/
 
-#COPY model.joblib app/model/model.joblib  # copiar o modelo para o container
-# criar e copiar script para carregar e servir o modelo
+# OPCIONAL: Descomente para copiar o modelo pré-treinado, se necessário
+# COPY model.joblib /app/model/model.joblib
 
-CMD ["/bin/bash"]
+CMD ["python", "/app/scripts/main.py"]

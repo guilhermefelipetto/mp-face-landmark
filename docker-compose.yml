@@ -7,28 +7,28 @@ services:
       dockerfile: Dockerfile
     container_name: python-app
     volumes:
-      - ./scripts:/app/scripts
-      - ./requirements.txt:/app/requirements.txt
+      - ./scripts:/app/scripts  # Garante que os scripts sejam montados corretamente
+      - ./requirements.txt:/app/requirements.txt  # Monta o arquivo de dependências
     depends_on:
       - db
     environment:
       - DATABASE_HOST=db
       - DATABASE_USER=postgres
       - DATABASE_PASSWORD=postgres
-      - DATABASE_NAME=database
-    command: ["/bin/bash"]
+      - DATABASE_NAME=mydatabase  # Ajuste para corresponder ao nome do banco no serviço db
+    command: ["python", "/app/scripts/main.py"]  # Comando para executar o script principal automaticamente
 
   db:
     image: postgres:13
     container_name: postgres-db
     environment:
-      POSTGRES_DB: mydatabase
+      POSTGRES_DB: mydatabase  # Assegura a consistência com a variável de ambiente do serviço python-app
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data  # Volume para persistência de dados
 
 volumes:
   postgres_data:
