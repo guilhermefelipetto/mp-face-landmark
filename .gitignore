@@ -3,7 +3,7 @@ mlruns/
 images/
 teste/
 .venv/
-data_/
+data/
 images_test/
 specific_distances/
 default_landmark_distances/
