@@ -1,0 +1,7 @@
+FROM continuumio/miniconda3
+
+RUN conda install -c conda-forge mlflow
+
+EXPOSE 5000
+
+CMD ["mlflow", "ui", "--host", "0.0.0.0"]

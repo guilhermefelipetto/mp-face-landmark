@@ -1,0 +1,9 @@
+scripts/__pycache__/
+scripts/data/
+
+scripts/config-example.json
+scripts/image_processing-example.py
+scripts/process_data-example.py
+scripts/main-example.py
+scripts/predict-example.py
+scripts/train-example.py
