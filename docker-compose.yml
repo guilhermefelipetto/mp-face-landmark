@@ -1,34 +1,51 @@
-version: '3.8'
+networks:
+  netdb:
+    driver: bridge
 
 services:
   python-app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: python-app
-    volumes:
-      - ./scripts:/app/scripts
-      - ./requirements.txt:/app/requirements.txt
+    container_name: python
     depends_on:
       - db
+    networks:
+      - netdb
+    volumes:
+      - data_volume:/workdir/scripts/data
+    env_file:
+      - .env
+    command: python scripts/main.py
+    ports:
+      - "5002:5002"
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_USER=postgres
-      - DATABASE_PASSWORD=postgres
-      - DATABASE_NAME=db
-    command: ["python", "/app/scripts/main.py"]
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/db
 
   db:
     image: postgres:13
     container_name: postgres-db
-    environment:
-      POSTGRES_DB: db
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - .env
     ports:
       - "5432:5432"
+    networks:
+      - netdb
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - data_volume:/data
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.mlflow
+    container_name: mlflow-server
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_volume:/mlflow
 
 volumes:
   postgres_data:
+  data_volume:
+  mlflow_volume:

@@ -2,6 +2,7 @@ scripts/__pycache__/
 mlruns/
 .venv/
 
+scripts/database/__pycache__/
 default_landmark_distances/
 specific_distances/
 scripts/data/
@@ -17,6 +18,8 @@ scripts/main.py
 scripts/train.py
 scripts/predict.py
 scripts/config.json
+scripts/process_data.py
+scripts/local_load_db.py
 scripts/image_processing.py
 
 measures.txt
