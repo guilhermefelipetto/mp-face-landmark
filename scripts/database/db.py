@@ -1,23 +1,15 @@
-import os
-import pandas as pd
 from sqlalchemy import create_engine, Table, Column, Float, Integer, String, MetaData, insert
-from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy import inspect
+from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy.ext.declarative import declarative_base
+from process_data import generate_train_data
+from sqlalchemy.orm import sessionmaker
 
-DATABASE_TYPE = 'postgresql'
-DBAPI = 'psycopg2'
-ENDPOINT = os.environ.get('DATABASE_HOST', '192.168.4.23')
-USER = os.environ.get('DATABASE_USER', 'postgres')
-PASSWORD = os.environ.get('DATABASE_PASSWORD', 'postgres')
-PORT = os.environ.get('DATABASE_PORT', 5432)
-DATABASE = os.environ.get('DATABASE_NAME', 'db')
-
-engine = create_engine(f'postgresql://{USER}:{PASSWORD}@{ENDPOINT}:{PORT}/{DATABASE}')
-
-path_to_txt_files = "/workdir/scripts/data/specific_distances"
-
-def create_table_if_not_exists(engine):
-    print('CRIANDO BANCO')
+def create_database_if_not_exists(url):
+    engine = create_engine(url)
+    if not database_exists(engine.url):
+        create_database(engine.url)
+        print("Banco de dados criado.")
+    
     metadata = MetaData()
     table = Table('measurements', metadata,
                   Column('id', Integer, primary_key=True),
@@ -57,49 +49,9 @@ def create_table_if_not_exists(engine):
                   Column('Ponto_externo_olho_esquerdo_para_queixo', Float),
                   Column('Ponto_interno_olho_esquerdo_para_queixo', Float),
                  )
-    inspector = inspect(engine)
-    if not inspector.has_table('measurements', schema=None):
-        metadata.create_all(engine)
     
-    return table
-
-def process_txt_file(file_path):
-    data = {}
-    try:
-        with open(file_path, 'r') as file:
-            for line in file:
-                parts = line.strip().split(' ')
-                measure_name = '_'.join(parts[3:])
-                distance = float(parts[2])
-                data[measure_name] = distance
-    except Exception as e:
-        print(f"Erro ao processar arquivo {file_path}: {e}")
-    return data
-
-def load_data_to_db(table, engine, data):
-    try:
-        with engine.connect() as connection:
-            stmt = insert(table).values(data)
-            connection.execute(stmt)
-            print("Dados inseridos com sucesso.")
-    except SQLAlchemyError as e:
-        print(f"Erro ao inserir dados no banco: {e}")
-
-def check_database():
-    """ Verifica se o banco de dados está vazio e inicializa se necessário. """
-    inspector = inspect(engine)
-    if not inspector.get_table_names():
-        print("Banco de dados está vazio, executando local_load_db.py")
-        os.system("python local_load_db.py")
-    else:
-        print("Banco de dados já contém dados.")
-
-def main():
-    table = create_table_if_not_exists(engine)
-    check_database()
-    for filename in os.listdir(path_to_txt_files):
-        if filename.endswith(".txt"):
-            file_path = os.path.join(path_to_txt_files, filename)
-            print(f"Processando arquivo: {file_path}")
-            data = process_txt_file(file_path)
-            load_data_to_db(table, engine, data)
+    if not engine.dialect.has_table(engine.connect(), 'measurements'):
+        metadata.create_all(engine)
+        print("Tabela criada.")
+    
+    return engine, table

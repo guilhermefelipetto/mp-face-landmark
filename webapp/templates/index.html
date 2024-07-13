@@ -9,12 +9,30 @@
 <body>
     <form action="/upload_image" method="POST" enctype="multipart/form-data">
         <input type="file" name="file" required><br>
+        <div>
+            <input type="checkbox" name="type" value="agua" id="agua" > Agua
+            <input type="checkbox" name="type" value="fogo" id="fogo" > Fogo
+            <input type="checkbox" name="type" value="terra" id="terra" > Terra
+            <input type="checkbox" name="type" value="metal" id="metal" > Metal
+            <input type="checkbox" name="type" value="madeira" id="madeira" > Madeira
+        </div>
         <button type="submit">Upload Image</button>
     </form>
     
+    <script>
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(chk => {
+            chk.onclick = () => {
+                checkboxes.forEach(other => {
+                    if (other !== chk) other.checked = false;
+                });
+            };
+        });
+    </script>
+
     {% if uploaded_image %}
         <img src="{{ url_for('static', filename='workdir/static/images/' + uploaded_image) }}" alt="Uploaded Image"/>
-        <form action="{{ url_for('process_image', filename=uploaded_image) }}" method="POST">
+        <form action="{{ url_for('process_image') }}" method="POST">
             <button type="submit">Process and Save to DB</button>
         </form>
     {% endif %}

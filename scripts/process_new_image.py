@@ -1,9 +1,7 @@
 from image_processing import FaceMeshModel
-from database import db
 
 
 def process_new_image(image_path=None):
-    print('ENTROU NA FUNCAO PROCESS_NEW_IMAGE')
     modelo = FaceMeshModel(config_path='/workdir/scripts/config.json')
     modelo.process_image(image_path=image_path)
 
