@@ -6,7 +6,6 @@ from sqlalchemy.orm import sessionmaker
 def func_load_db(train_data_params, db_url):
     generate_train_data(**train_data_params)
     
-    # db_url = "postgresql://postgres:postgres@192.168.4.23:5432/db"
     engine = create_engine(db_url)
     Base = declarative_base()
 
