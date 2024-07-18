@@ -59,7 +59,7 @@ def generate_train_data(root_dir, config_path):
 
     measurements = []
 
-    print('RODANDO FOR PARA GERACAO DO CSV')
+    # Geracao do CSV
     first_file = True
     for filename in os.listdir(input_dir):
         if filename.endswith('.txt'):

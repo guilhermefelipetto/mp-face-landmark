@@ -1,12 +1,12 @@
+import os
+import load_db
+import run_train
+import predict
 from flask import Flask, render_template, request, jsonify, url_for, redirect
 from process_new_image import process_new_image
-from database import db
-import os
 from dotenv import load_dotenv
-import load_db
 from werkzeug.utils import secure_filename
-import train
-import predict
+from database import db
 
 app = Flask(__name__, static_folder='/workdir/webapp/static', template_folder='/workdir/webapp/templates')
 load_dotenv()
@@ -14,6 +14,7 @@ load_dotenv()
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['MLFLOW_DATABASE_URI'] = os.environ.get('MLFLOW_DATABASE_URI')
 app.config['TABLE_NAME'] = os.environ.get('TABLE_NAME')
 app.config['N_ESTIMATORS'] = os.environ.get('N_ESTIMATORS')
 app.config['MAX_FEATURES'] = os.environ.get('MAX_FEATURES')
@@ -61,7 +62,7 @@ def upload_file():
             filename = secure_filename(file.filename)
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], image_type, filename)
             file.save(file_path)
-            
+
             return redirect(url_for('process_image', image_type=image_type, filename=filename))
         
         else:
@@ -120,7 +121,7 @@ def process_image(image_type, filename):
             else:
                 print(f"Sem arquivos na pasta: {root}")
         
-        return render_template('success.html', filename=filename, processed_data=processed_data)
+        return render_template('success.html', image_type=image_type, filename=filename, processed_data=processed_data)
     
     except Exception as e:
         app.logger.error(f'Erro ao processar imagem: {str(e)}')
@@ -129,23 +130,22 @@ def process_image(image_type, filename):
 
 
 @app.route('/train_model', methods=['GET', 'POST'])
-def train_model():
-    train_params = {
-        'connection_string': app.config['SQLALCHEMY_DATABASE_URI'],
-        'table_name': app.config['TABLE_NAME'],
-        'N_ESTIMATORS': app.config['N_ESTIMATORS'],
-        'MAX_FEATURES': app.config['MAX_FEATURES'],
-        'TEST_SIZE': app.config['TEST_SIZE'],
-        'MAX_DEPTH': app.config['MAX_DEPTH'],
-        'RANDOM_STATE': app.config['RANDOM_STATE'],
-        'MIN_SAMPLES_SPLIT': app.config['MIN_SAMPLES_SPLIT'],
-        'BOOTSTRAP': app.config['BOOTSTRAP'],
-        'MIN_SAMPLES_LEAF': app.config['MIN_SAMPLES_LEAF'],
-        'show_info': app.config['SHOW_INFO']
-    }
-
+def train_model():  # POR ALGUM MOTIVO A CONFUSION MATRIX NAO ESTA SENDO SALVA NO MLFLOW COMO ARTEFATO
     try:
-        train.train_model(**train_params)
+        run_train.run(
+            MODEL_NAME='latest',
+            DB_URL=app.config['MLFLOW_DATABASE_URI'],
+            TABLE_NAME=app.config['TABLE_NAME'],
+            N_ESTIMATORS=app.config['N_ESTIMATORS'],
+            MAX_FEATURES=app.config['MAX_FEATURES'],
+            TEST_SIZE=app.config['TEST_SIZE'],
+            MAX_DEPTH=app.config['MAX_DEPTH'],
+            RANDOM_STATE=app.config['RANDOM_STATE'],
+            MIN_SAMPLES_SPLIT=app.config['MIN_SAMPLES_SPLIT'],
+            BOOTSTRAP=app.config['BOOTSTRAP'].lower() == 'true',
+            MIN_SAMPLES_LEAF=app.config['MIN_SAMPLES_LEAF'],
+            SHOW_INFO=app.config['SHOW_INFO'].lower() == 'true'
+        )
     
     except Exception as e:
         print('ERRO:', e)
