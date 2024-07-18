@@ -30,7 +30,7 @@ class FaceMeshModel:
         if self.reference_distance is None:
             self.reference_distance = self.calculate_distance(10, 152)
         
-        directory = "default_landmark_distances"
+        directory = "/workdir/scripts/data/default_landmark_distances"
         os.makedirs(directory, exist_ok=True)
         output_path = os.path.join(directory, output_file)
         
@@ -39,7 +39,7 @@ class FaceMeshModel:
                 dist = self.calculate_distance(i, i + 1) / self.reference_distance
                 file.write(f'{i} {i+1} {dist}\n')
 
-    def calculate_and_draw_distance(self, idx1, idx2, save=False, measure_type='None', output_filename=None):
+    def calculate_and_draw_distance(self, idx1, idx2, save=False, measure_type='None'):
         if not self.points:
             raise ValueError("No landmarks available. Process an image first.")
         
@@ -51,11 +51,15 @@ class FaceMeshModel:
         cv2.putText(self.image, f"{dist:.2f}", ((self.points[idx1][0] + self.points[idx2][0]) // 2, (self.points[idx1][1] + self.points[idx2][1]) // 2), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
 
         if save:
-            directory = "specific_distances"
+            directory = "/workdir/scripts/data/specific_distances"
             os.makedirs(directory, exist_ok=True)
-            if output_filename is None:
-                image_basename = os.path.splitext(os.path.basename(self.image_path))[0]
-                output_filename = f"{directory}/{image_basename}_distances.txt"
+
+            last_folder = os.path.basename(os.path.dirname(self.image_path))
+            last_folder = last_folder.replace(" ", "_").lower()
+
+            image_basename = os.path.splitext(os.path.basename(self.image_path))[0]
+            output_filename = f"{directory}/{last_folder}_{image_basename}_distances.txt"
+
             measure_type = measure_type.replace(' ', '_').strip()
             with open(output_filename, 'a') as file:
                 file.write(f'{idx1} {idx2} {dist} {measure_type}\n')
@@ -123,9 +127,40 @@ class Image:
             self.modelo_face_mesh.process_image(self.path)
 
             self.features = [
-                self.modelo_face_mesh.calculate_and_draw_distance(1, ),
-                self.modelo_face_mesh.calculate_and_draw_distance(10, 20)
-                # Use as mesmas medicoes que o processamento
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 152),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 152),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 10),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 361),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 132),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 365),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 150),
+                self.modelo_face_mesh.calculate_and_draw_distance(334, 443),
+                self.modelo_face_mesh.calculate_and_draw_distance(282, 334),
+                self.modelo_face_mesh.calculate_and_draw_distance(105, 223),
+                self.modelo_face_mesh.calculate_and_draw_distance(52, 105),
+                self.modelo_face_mesh.calculate_and_draw_distance(54, 284),
+                self.modelo_face_mesh.calculate_and_draw_distance(9, 10),
+                self.modelo_face_mesh.calculate_and_draw_distance(133, 463),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 159),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 386),
+                self.modelo_face_mesh.calculate_and_draw_distance(159, 386),
+                self.modelo_face_mesh.calculate_and_draw_distance(133, 33),
+                self.modelo_face_mesh.calculate_and_draw_distance(263, 362),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 278),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 48),
+                self.modelo_face_mesh.calculate_and_draw_distance(0, 1),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 16),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 61),
+                self.modelo_face_mesh.calculate_and_draw_distance(1, 291),
+                self.modelo_face_mesh.calculate_and_draw_distance(0, 16),
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 33),
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 133),
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 263),
+                self.modelo_face_mesh.calculate_and_draw_distance(10, 362),
+                self.modelo_face_mesh.calculate_and_draw_distance(33, 152),
+                self.modelo_face_mesh.calculate_and_draw_distance(133, 152),
+                self.modelo_face_mesh.calculate_and_draw_distance(152, 263),
+                self.modelo_face_mesh.calculate_and_draw_distance(152, 362)
             ]
 
             # Obtenha as probabilidades das previsões
@@ -137,5 +172,7 @@ class Image:
             max_probability = probabilidades[max_index] * 100
 
             print(f"Predição: Elemento: {classe_predita}, {max_probability:.2f}%")
+            return classe_predita, max_probability
         else:
             print("Imagem não está carregada ou erro na carga.")
+            return None

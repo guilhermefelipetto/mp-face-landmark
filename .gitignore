@@ -14,13 +14,6 @@ data/
 
 .env
 
-scripts/main.py
-scripts/train.py
-scripts/predict.py
-scripts/config.json
-scripts/process_data.py
-scripts/image_processing.py
-
 measures.txt
 measurements_data.csv
 model.joblib
