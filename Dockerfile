@@ -5,13 +5,14 @@ WORKDIR /workdir
 RUN apt-get update && apt-get install -y libpq-dev
 RUN apt-get update && apt-get install -y libgl1-mesa-glx
 RUN apt-get update && apt-get install -y libglib2.0-0
+RUN apt-get update && apt-get install -y gcc
 
 COPY requirements.txt .
 RUN pip --default-timeout=100 install --no-cache-dir -r requirements.txt
 
 RUN mkdir -p ./scripts/data/specific_distances
 RUN mkdir -p ./scripts/data/default_landmark_distances
-RUN mkdir -p ./model/
+RUN mkdir -p ./model
 
 COPY model/model.joblib ./model/model.joblib
 COPY scripts/main.py ./scripts/main.py
@@ -28,3 +29,5 @@ COPY scripts/predict.py ./scripts/predict.py
 
 COPY scripts/database/db.py ./scripts/database/db.py
 COPY webapp/ ./webapp/
+
+COPY scripts/run_train.py ./scripts/run_train.py

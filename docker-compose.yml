@@ -1,5 +1,5 @@
 networks:
-  netdb:
+  appnet:
     driver: bridge
 
 services:
@@ -10,10 +10,12 @@ services:
     container_name: python
     depends_on:
       - db
+      - mlflow
     networks:
-      - netdb
+      - appnet
     volumes:
       - data_volume:/workdir/scripts/data
+      - mlflow_artifacts:/workdir/artifacts
     env_file:
       - .env
     command: python scripts/main.py
@@ -21,6 +23,7 @@ services:
       - "5002:5002"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/db
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
 
   db:
     image: postgres:13
@@ -30,7 +33,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - netdb
+      - appnet
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - data_volume:/data
@@ -42,10 +45,16 @@ services:
     container_name: mlflow-server
     ports:
       - "5000:5000"
+    networks:
+      - appnet
     volumes:
-      - mlflow_volume:/mlflow
+      - mlflow_volume:/mlruns
+      - mlflow_artifacts:/mlflow/artifacts
+    environment:
+      - MLFLOW_ARTIFACT_URI=/mlflow/artifacts
 
 volumes:
   postgres_data:
   data_volume:
   mlflow_volume:
+  mlflow_artifacts:

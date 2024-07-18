@@ -2,6 +2,11 @@ FROM continuumio/miniconda3
 
 RUN conda install -c conda-forge mlflow
 
+RUN mkdir -p /mlruns && chmod -R 777 /mlruns
+RUN mkdir -p /mlflow/artifacts
+
+ENV GUNICORN_TIMEOUT=120
+
 EXPOSE 5000
 
-CMD ["mlflow", "ui", "--host", "0.0.0.0"]
+CMD ["gunicorn", "mlflow.server:app", "--bind", "0.0.0.0:5000", "--workers", "4"]
