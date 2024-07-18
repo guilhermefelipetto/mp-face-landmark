@@ -5,18 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload de Imagem</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .checkbox-group {
+            display: flex;
+            align-items: left;
+        }
+
+        .checkbox-group label {
+            margin-right: 10px;
+            display: flex;
+            align-items: left;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    </style>
 </head>
 <body>
     <form action="/upload_image" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file" required><br>
-        <div>
-            <input type="checkbox" name="type" value="agua" id="agua" > Agua
-            <input type="checkbox" name="type" value="fogo" id="fogo" > Fogo
-            <input type="checkbox" name="type" value="terra" id="terra" > Terra
-            <input type="checkbox" name="type" value="metal" id="metal" > Metal
-            <input type="checkbox" name="type" value="madeira" id="madeira" > Madeira
+        <label for="file">Escolha um arquivo:</label>
+        <input type="file" id="file" name="file" required><br>
+        <div class="checkbox-group">
+            <label><input type="checkbox" name="type" value="agua" id="agua"> Água</label>
+            <label><input type="checkbox" name="type" value="fogo" id="fogo"> Fogo</label>
+            <label><input type="checkbox" name="type" value="terra" id="terra"> Terra</label>
+            <label><input type="checkbox" name="type" value="metal" id="metal"> Metal</label>
+            <label><input type="checkbox" name="type" value="madeira" id="madeira"> Madeira</label>
         </div>
         <button type="submit">Upload Image</button>
+    </form>
+
+    <form action="/train_model" method="POST">
+        <button type="submit">Treinar modelo</button>
     </form>
     
     <script>
@@ -31,10 +52,10 @@
     </script>
 
     {% if uploaded_image %}
-        <img src="{{ url_for('static', filename='workdir/static/images/' + uploaded_image) }}" alt="Uploaded Image"/>
+        <img src="{{ url_for('static', filename='workdir/static/images/' + image_type + '/' + uploaded_image) }}" alt="Uploaded Image"/>
         <form action="{{ url_for('process_image') }}" method="POST">
             <button type="submit">Process and Save to DB</button>
         </form>
     {% endif %}
 </body>
-</html> 
+</html>
